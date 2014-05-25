@@ -8,6 +8,9 @@ class HomeController < ApplicationController
             article = a.parsed_response['query']['pages'].flatten.last['title']
         end
         @article = article
+        links = get_links article
+        @one = links.first
+        @two = links[1]
     end
 
     def start
@@ -19,21 +22,21 @@ class HomeController < ApplicationController
         render json: {link: article}
     end
 
+    def both
+        links = get_links params[:article]
+        if links == :error # or if it empty
+            render json: {error: true} if links == :error
+        else
+            render json: {link: links.first, link2: links[1], error: false}
+        end
+    end
+
     def first
         links = get_links params[:article]
         if links == :error
             render json: {error: true} if links == :error
         else
             render json: {link: links.first, error: false}
-        end
-    end
-
-    def both
-        links = get_links params[:article]
-        if links == :error
-            render json: {error: true} if links == :error
-        else
-            render json: {link: links.first, link2: links[1], error: false}
         end
     end
 
@@ -63,6 +66,7 @@ end
 
 def get_links article
     # TODO, better redirect solving
+    # scrub links of files and images
     url = 'https://en.wikipedia.org/w/index.php?action=raw&section=0&title=' + article.gsub(' ', '%20')
     page = HTTParty.get url
     article = page.to_s

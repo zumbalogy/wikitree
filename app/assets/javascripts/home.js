@@ -5,15 +5,14 @@ var margin = {
     top:    0,
     bottom: 0,
     right:  50,
-    left:   70
+    left:   150
 }
 
-var width  = $(window).width()  - margin.right - margin.left
+var width  = $(window).width()
 var height = $(window).height()
     
 var i = 0
 var duration = 1500
-var root
 
 var tree = d3.layout.tree()
     .size([height, width])
@@ -28,8 +27,11 @@ var svg = d3.select('body').append('svg')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
 root = {
-    "name": "Start",
-    "children": [{"name": $('#init').text(), "children": []}]
+    "name": $('#init').text(),
+    "children": [
+        {"name": $('#one').text(), "children": []},
+        {"name": $('#two').text(), "children": []}
+    ]
 }
 root.x0 = height / 2
 root.y0 = 0

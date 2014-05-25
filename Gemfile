@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 
 gem 'rails', '4.0.2'
-gem 'sqlite3'
 gem 'sass-rails', '~> 4.0.0'
 
 # Use Uglifier as compressor for JavaScript assets
@@ -23,3 +22,5 @@ end
 
 gem 'd3-rails'
 gem 'httparty'
+
+gem 'rails_12factor', group: :production
