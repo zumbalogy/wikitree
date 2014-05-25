@@ -139,8 +139,6 @@ function click(d) {
             success: function(data){
                 d.children = d._children
                 if (data['error'] == false) {
-                    d.children.shift()
-                    d.children.shift()
                     d.children.push({name: data.link, _children: []})
                     if (data.link2) {
                         d.children.push({name: data.link2, _children: []})

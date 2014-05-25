@@ -21,7 +21,7 @@ class HomeController < ApplicationController
         end
         render json: {link: article}
     end
-
+# TODO, unicode urls kill app
     def both
         links = get_links params[:article]
         if links == :error # or if it empty
