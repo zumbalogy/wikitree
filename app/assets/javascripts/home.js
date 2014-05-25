@@ -2,17 +2,17 @@ $(function(){
 
 
 var margin = {
-    top: 0,
-    right: 50,
+    top:    0,
     bottom: 0,
-    left: 70
+    right:  50,
+    left:   70
 }
 
 var width  = $(window).width()  - margin.right - margin.left
-var height = $(window).height() - margin.top   - margin.bottom
+var height = $(window).height()
     
 var i = 0
-var duration = 750
+var duration = 1500
 var root
 
 var tree = d3.layout.tree()
@@ -23,26 +23,27 @@ var diagonal = d3.svg.diagonal()
 
 var svg = d3.select('body').append('svg')
     .attr('width', $(window).width())
-    .attr('height', $(window).height())
+    .attr('height', height)
     .append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
-d3.json('flare.json', function(error, flare) {
-    root = flare
-    root.x0 = height / 2
-    root.y0 = 0
+root = {
+    "name": "Start",
+    "children": [{"name": "Joe", "children": []}]
+}
+root.x0 = height / 2
+root.y0 = 0
 
-    function collapse(d) {
-        if (d.children) {
-            d._children = d.children
-            d._children.forEach(collapse)
-            d.children = null
-        }
+function collapse(d) {
+    if (d) {
+        d._children = d.children
+        d._children.forEach(collapse)
+        d.children = null
     }
+}
 
-    root.children.forEach(collapse)
-    update(root)
-})
+root.children.forEach(collapse)
+update(root)
 
 d3.select(self.frameElement).style('height', '800px')
 
@@ -67,12 +68,12 @@ function update(source) {
 
     nodeEnter.append('circle')
         .attr('r', 1e-6)
-        .style('fill', function(d) { return d._children ? 'lightsteelblue' : '#fff' })
+        .style('fill', function(d) { return d._children ? 'cyan' : '#fff' })
 
     nodeEnter.append('text')
         .attr('x', function(d) { return d.children || d._children ? -10 : 10 })
         .attr('dy', '.35em')
-        .attr('text-anchor', function(d) { return d.children || d._children ? 'end' : 'start' })
+        .attr('text-anchor', function(d){return d.children || d._children ? 'end' : 'start' })
         .text(function(d) { return d.name })
         .style('fill-opacity', 1e-6)
 
@@ -83,7 +84,7 @@ function update(source) {
 
     nodeUpdate.select('circle')
         .attr('r', 4.5)
-        .style('fill', function(d) { return d._children ? 'lightsteelblue' : '#fff' })
+        .style('fill', function(d) { return d._children ? 'cyan' : '#fff' })
 
     nodeUpdate.select('text')
         .style('fill-opacity', 1)
@@ -127,10 +128,27 @@ function update(source) {
 // Toggle children on click.
 function click(d) {
     if (!d.children) {
-        d.children  = d._children
-        d._children = null
+        $.ajax({
+            url: '/both',
+            method: 'post',
+            data: {
+                article: d.name
+            },
+            success: function(data){
+                d.children = d._children
+                if (data['error'] == false) {
+                    d.children.shift()
+                    d.children.shift()
+                    d.children.push({name: data.link, _children: []})
+                    if (data.link2) {
+                        d.children.push({name: data.link2, _children: []})
+                    }
+                }
+                d._children = null
+                update(d)
+            }
+        })
     }
-    update(d)
 }
 
 

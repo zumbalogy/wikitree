@@ -15,7 +15,20 @@ class HomeController < ApplicationController
 
     def first
         links = get_links params[:article]
-        render json: {link: links.first}
+        if links == :error
+            render json: {error: true} if links == :error
+        else
+            render json: {link: links.first, error: false}
+        end
+    end
+
+    def both
+        links = get_links params[:article]
+        if links == :error
+            render json: {error: true} if links == :error
+        else
+            render json: {link: links.first, link2: links[1], error: false}
+        end
     end
 
     def second
@@ -44,9 +57,10 @@ end
 
 def get_links article
     # TODO, better redirect solving
-    url = 'https://en.wikipedia.org/w/index.php?action=raw&section=0&title=' + article
+    url = 'https://en.wikipedia.org/w/index.php?action=raw&section=0&title=' + article.gsub(' ', '%20')
     page = HTTParty.get url
     article = page.to_s
+    return :error if article == ''
     a = page.gsub(/{{.*}}/m, '')
     scan = a.scan(/\[\[.*?\]\]/)
     clean = scan.map {|a| a.gsub(/\|.*/, '').gsub(']]', '')}
