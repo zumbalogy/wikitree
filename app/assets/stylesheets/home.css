@@ -1,0 +1,23 @@
+body {
+    background-color: #777;
+}
+
+text {
+    font-family: mono;
+}
+
+.node circle {
+    fill: #fff;
+    stroke: #44d;
+    stroke-width: 1.5px;
+}
+
+.node {
+    font: 10px sans-serif;
+}
+
+.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+}
