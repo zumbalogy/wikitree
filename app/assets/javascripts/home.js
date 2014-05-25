@@ -8,8 +8,8 @@ var margin = {
     left: 70
 }
 
-var width = $(window).width() - margin.right - margin.left
-var height = $(window).height() - margin.top - margin.bottom
+var width  = $(window).width()  - margin.right - margin.left
+var height = $(window).height() - margin.top   - margin.bottom
     
 var i = 0
 var duration = 750
@@ -22,8 +22,8 @@ var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x] })
 
 var svg = d3.select('body').append('svg')
-    .attr('width', width + margin.right + margin.left)
-    .attr('height', height + margin.top + margin.bottom)
+    .attr('width', $(window).width())
+    .attr('height', $(window).height())
     .append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
@@ -62,7 +62,7 @@ function update(source) {
   // Enter any new nodes at the parent's previous position.
   var nodeEnter = node.enter().append('g')
       .attr('class', 'node')
-      .attr('transform', function(d) { return 'translate(' + source.y0 + ',' + source.x0 + ')' })
+      .attr('transform', function(d) {return 'translate(' + source.y0 + ',' + source.x0 + ')' })
       .on('click', click)
 
     nodeEnter.append('circle')
@@ -117,15 +117,6 @@ function update(source) {
         .duration(duration)
         .attr('d', diagonal)
 
-  // Transition exiting nodes to the parent's new position.
-    link.exit().transition()
-        .duration(duration)
-        .attr('d', function(d) {
-            var o = {x: source.x, y: source.y}
-            return diagonal({source: o, target: o})
-        })
-        .remove()
-
   // Stash the old positions for transition.
     nodes.forEach(function(d) {
         d.x0 = d.x
@@ -135,11 +126,8 @@ function update(source) {
 
 // Toggle children on click.
 function click(d) {
-    if (d.children) {
-        d._children = d.children
-        d.children = null
-    } else {
-        d.children = d._children
+    if (!d.children) {
+        d.children  = d._children
         d._children = null
     }
     update(d)
