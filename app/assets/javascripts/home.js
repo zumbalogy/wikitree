@@ -29,7 +29,7 @@ var svg = d3.select('body').append('svg')
 
 root = {
     "name": "Start",
-    "children": [{"name": "Joe", "children": []}]
+    "children": [{"name": $('#init').text(), "children": []}]
 }
 root.x0 = height / 2
 root.y0 = 0

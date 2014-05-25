@@ -2,6 +2,12 @@ class HomeController < ApplicationController
 
     def index
         # renders app/views/home/index.html.erb
+        article = ':'
+        while article.include?(':') || article.include?('/')
+            a = HTTParty.get 'https://en.wikipedia.org/w/api.php?action=query&generator=random&prop=info&format=json'
+            article = a.parsed_response['query']['pages'].flatten.last['title']
+        end
+        @article = article
     end
 
     def start
