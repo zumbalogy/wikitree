@@ -4,6 +4,15 @@ class HomeController < ApplicationController
         # renders app/views/home/index.html.erb
     end
 
+    def start
+        article = ':'
+        while article.include?(':') || article.include?('/')
+            a = HTTParty.get 'https://en.wikipedia.org/w/api.php?action=query&generator=random&prop=info&format=json'
+            article = a.parsed_response['query']['pages'].flatten.last['title']
+        end
+        render json: {link: article}
+    end
+
     def first
         links = get_links params[:article]
         render json: {link: links.first}
@@ -34,6 +43,7 @@ class HomeController < ApplicationController
 end
 
 def get_links article
+    # TODO, better redirect solving
     url = 'https://en.wikipedia.org/w/index.php?action=raw&section=0&title=' + article
     page = HTTParty.get url
     article = page.to_s

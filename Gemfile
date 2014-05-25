@@ -21,5 +21,5 @@ group :development do
     gem 'pry-debugger'
 end
 
-gem 'nokogiri'
+gem 'd3-rails'
 gem 'httparty'
