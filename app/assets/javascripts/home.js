@@ -189,7 +189,7 @@ setInterval(function(){
         if (circle.offset() == null){
             attempt++
         }
-        if (attempt = 3){
+        if (attempt = 1){
             number = 1 + Math.ceil(circleList.length * Math.random() * 1.1) 
             circle = $(circleList[number])
             attempt = 0
