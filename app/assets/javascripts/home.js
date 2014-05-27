@@ -56,11 +56,12 @@ update(root)
 
 d3.select(self.frameElement).style('height', '800px')
 
+
 function update(source) {
 
   // Compute the new tree layout.
-  var nodes = tree.nodes(root).reverse(),
-      links = tree.links(nodes)
+  var nodes = tree.nodes(root).reverse()
+  var links = tree.links(nodes)
 
   // Normalize for fixed-depth.
   nodes.forEach(function(d) { d.y = d.depth * 180 })
@@ -94,6 +95,7 @@ function update(source) {
 
     nodeUpdate.select('circle')
         .attr('r', 6)
+        .attr('class', function(d) { return d._children ? 'closed' : 'open' })
         .style('fill', function(d) { return d._children ? 'cyan' : '#fff' })
 
     nodeUpdate.select('text')
@@ -107,7 +109,6 @@ function update(source) {
 
     nodeExit.select('circle')
         .attr('r', 1e-6)
-        .attr('class', 'open')
 
     nodeExit.select('text')
         .style('fill-opacity', 1e-6)
@@ -148,16 +149,13 @@ function click(d) {
             success: function(data){
                 d.children = d._children
                 if (data['error'] == false) {
-                    for (var i = 0; i < data.list.length && i < 3; i++) {
+                    var limit = 1 + (Math.random() * 2)
+                    for (var i = 0; i < data.list.length && i < limit; i++) {
                         d.children.push({
                             name: data.list[i], 
                             _children: []
                         })
                     }
-                    // d.children.push({name: data.link, _children: []})
-                    // if (data.link2) {
-                    //     d.children.push({name: data.link2, _children: []})
-                    // }
                 }
                 d._children = null
                 update(d)
@@ -177,29 +175,33 @@ jQuery.fn.d3Click = function () {
 
 // make first one have class open
 
-var number = 0
-var count = 0
-var attempt = 0
-setInterval(function(){
-    if (count < 900){
-        number--
-        var circleList = $("circle.closed")
-        number += (Math.ceil(Math.random() * (circleList.length - number)))
-        var circle = $(circleList[number])
-        if (circle.offset() == null){
-            attempt++
-        }
-        if (attempt = 1){
-            number = 1 + Math.ceil(circleList.length * Math.random() * 1.1) 
-            circle = $(circleList[number])
-            attempt = 0
-        }
-        $('html,body').animate({scrollLeft: circle.offset().left - (width / 2)});
-        circle.d3Click()
-    }
-}, 2000)
+// var number = 0
+// var count = 0
+// var attempt = 0
+// setInterval(function(){
+//     if (count < 900){
+//         var circleList = $("circle.closed")
+//         number += (Math.floor(Math.random() * (circleList.length - number + 1)))
+//         var circle = $(circleList[number])
+//         if (circle.offset() == null){
+//             attempt++
+//         }
+//         if (attempt = 1){
+//             number = Math.ceil(circleList.length * Math.random()) 
+//             circle = $(circleList[number])
+//             attempt = 0
+//         }
+//         $('html,body').animate({scrollLeft: circle.offset().left - (width / 2)});
+//         circle.d3Click()
+//     }
+// }, 2200)
 
  $('html,body').animate({scrollLeft: 0});
+
+
+// make it so that on click, your great grandparent's children all become open.
+// and then just click a random closed one
+
 
 
 // setInterval(function(){
@@ -209,6 +211,23 @@ setInterval(function(){
 //     circle.d3Click()
 //     $('html,body').animate({scrollLeft: circle.offset().left - (width / 2)});
 // }, 2500)
+
+
+
+var count = 0
+setInterval(function(){
+    if (count < 50){
+        var circleList = $("circle.closed")
+        var number = Math.floor(Math.random() * circleList.length)
+        while (number == 0){
+            number = Math.floor(Math.random() * circleList.length)
+        }
+        var circle = $(circleList[number])
+        circle.d3Click()
+        $('html,body').animate({scrollLeft: circle.offset().left - (width / 2)});
+        count++
+    }
+}, 2200)
 
 
 
