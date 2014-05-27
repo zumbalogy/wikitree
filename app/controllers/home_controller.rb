@@ -9,8 +9,9 @@ class HomeController < ApplicationController
         end
         @article = article
         links = get_links article
-        @one = links.first
-        @two = links[1]
+        @one   = links[0]
+        @two   = links[1]
+        @three = links[2]
     end
 
     def start
@@ -53,7 +54,7 @@ class HomeController < ApplicationController
     def all
         # this only from header of article though
         links = get_links params[:article]
-        render json: {links: links}
+        render json: {list: links, error: false}
     end
 
     def random
@@ -67,6 +68,8 @@ end
 def get_links article
     # TODO, better redirect solving
     # scrub links of files and images
+
+    # there is also some issue of ordering
     url = 'https://en.wikipedia.org/w/index.php?action=raw&section=0&title=' + article.gsub(' ', '%20')
     page = HTTParty.get url
     article = page.to_s
@@ -75,5 +78,13 @@ def get_links article
     scan = a.scan(/\[\[.*?\]\]/)
     clean = scan.map {|a| a.gsub(/\|.*/, '').gsub(']]', '')}
     links = clean.map {|a| a[2..-1]}
-    return links
+    output = links.delete_if { |x|
+        x.include?(':') ||
+        x.include?('/') ||
+        x.include?('#') ||
+        x.include?('image') ||
+        x.include?('file') ||
+        x.include?('wikipedia')
+    }
+    return output.compact
 end

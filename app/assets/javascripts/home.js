@@ -9,7 +9,7 @@ var margin = {
 }
 
 var width  = $(window).width()
-var height = $(window).height()
+var height = $(window).height() - 25
     
 var i = 0
 var duration = 1500
@@ -21,18 +21,25 @@ var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x] })
 
 var svg = d3.select('body').append('svg')
-    .attr('width', $(window).width())
+    .attr('width', 50000)
     .attr('height', height)
     .append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
+var node1 = $('#one').text()
+var node2 = $('#two').text()
+var node3 = $('#three').text()
+
 root = {
-    "name": $('#init').text(),
-    "children": [
-        {"name": $('#one').text(), "children": []},
-        {"name": $('#two').text(), "children": []}
-    ]
+    'name': $('#init').text(),
+    'children': []
 }
+
+if (node1.length > 0){root.children.push({'name': node1,   'children': []})}
+if (node2.length > 0){root.children.push({'name': node2,   'children': []})}
+if (node3.length > 0){root.children.push({'name': node3,   'children': []})}
+
+
 root.x0 = height / 2
 root.y0 = 0
 
@@ -70,6 +77,7 @@ function update(source) {
 
     nodeEnter.append('circle')
         .attr('r', 1e-6)
+        .attr('class', 'closed')
         .style('fill', function(d) { return d._children ? 'cyan' : '#fff' })
 
     nodeEnter.append('text')
@@ -85,7 +93,7 @@ function update(source) {
         .attr('transform', function(d) { return 'translate(' + d.y + ',' + d.x + ')' })
 
     nodeUpdate.select('circle')
-        .attr('r', 4.5)
+        .attr('r', 6)
         .style('fill', function(d) { return d._children ? 'cyan' : '#fff' })
 
     nodeUpdate.select('text')
@@ -99,6 +107,7 @@ function update(source) {
 
     nodeExit.select('circle')
         .attr('r', 1e-6)
+        .attr('class', 'open')
 
     nodeExit.select('text')
         .style('fill-opacity', 1e-6)
@@ -131,7 +140,7 @@ function update(source) {
 function click(d) {
     if (!d.children) {
         $.ajax({
-            url: '/both',
+            url: '/all',
             method: 'post',
             data: {
                 article: d.name
@@ -139,10 +148,16 @@ function click(d) {
             success: function(data){
                 d.children = d._children
                 if (data['error'] == false) {
-                    d.children.push({name: data.link, _children: []})
-                    if (data.link2) {
-                        d.children.push({name: data.link2, _children: []})
+                    for (var i = 0; i < data.list.length && i < 3; i++) {
+                        d.children.push({
+                            name: data.list[i], 
+                            _children: []
+                        })
                     }
+                    // d.children.push({name: data.link, _children: []})
+                    // if (data.link2) {
+                    //     d.children.push({name: data.link2, _children: []})
+                    // }
                 }
                 d._children = null
                 update(d)
@@ -151,6 +166,49 @@ function click(d) {
     }
 }
 
+jQuery.fn.d3Click = function () {
+  this.each(function (i, e) {
+    var evt = document.createEvent("MouseEvents");
+    evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+
+    e.dispatchEvent(evt);
+  });
+};
+
+// make first one have class open
+
+var number = 0
+var count = 0
+var attempt = 0
+setInterval(function(){
+    if (count < 900){
+        number--
+        var circleList = $("circle.closed")
+        number += (Math.ceil(Math.random() * (circleList.length - number)))
+        var circle = $(circleList[number])
+        if (circle.offset() == null){
+            attempt++
+        }
+        if (attempt = 3){
+            number = 1 + Math.ceil(circleList.length * Math.random() * 1.1) 
+            circle = $(circleList[number])
+            attempt = 0
+        }
+        $('html,body').animate({scrollLeft: circle.offset().left - (width / 2)});
+        circle.d3Click()
+    }
+}, 2000)
+
+ $('html,body').animate({scrollLeft: 0});
+
+
+// setInterval(function(){
+//     var circleList = $("circle.closed")
+//     var number = Math.floor(Math.random() * (($('circle.closed').length) + 1) * 1.1)
+//     var circle = $(circleList[number])
+//     circle.d3Click()
+//     $('html,body').animate({scrollLeft: circle.offset().left - (width / 2)});
+// }, 2500)
 
 
 
