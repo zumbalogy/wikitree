@@ -159,7 +159,7 @@ function click(d) {
             success: function(data){
                 d.children = d._children
                 if (data['error'] == false) {
-                    var limit = 1 + (Math.random() * 2)
+                    var limit = 0.5 + Math.random()
                     for (var i = 0; i < data.list.length && i < limit; i++) {
                         d.children.push({
                             name: data.list[i], 
@@ -189,7 +189,7 @@ $('html,body').animate({scrollLeft: 0});
 
 var count = 0
 setInterval(function(){
-    if (count < 70){
+    if (count < 150){
         var circleList = $("circle.closed")
         var number = Math.floor(Math.random() * circleList.length)
         while (number == 0){
