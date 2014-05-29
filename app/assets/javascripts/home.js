@@ -1,5 +1,7 @@
 $(function(){
 
+risingTide = 0
+
 
 var margin = {
     top:    0,
@@ -95,7 +97,14 @@ function update(source) {
 
     nodeUpdate.select('circle')
         .attr('r', 6)
-        .attr('class', function(d) { return d._children ? 'closed' : 'open' })
+        .attr('class', function(d) { 
+            if (d.depth < risingTide) {
+                return ''
+            }
+            if (d._children) {
+                return 'closed'
+            }
+        })
         .style('fill', function(d) { return d._children ? 'cyan' : '#fff' })
 
     nodeUpdate.select('text')
@@ -137,8 +146,9 @@ function update(source) {
     })
 }
 
-// Toggle children on click.
+
 function click(d) {
+    risingTide += 0.2
     if (!d.children) {
         $.ajax({
             url: '/all',
@@ -173,50 +183,13 @@ jQuery.fn.d3Click = function () {
   });
 };
 
-// make first one have class open
 
-// var number = 0
-// var count = 0
-// var attempt = 0
-// setInterval(function(){
-//     if (count < 900){
-//         var circleList = $("circle.closed")
-//         number += (Math.floor(Math.random() * (circleList.length - number + 1)))
-//         var circle = $(circleList[number])
-//         if (circle.offset() == null){
-//             attempt++
-//         }
-//         if (attempt = 1){
-//             number = Math.ceil(circleList.length * Math.random()) 
-//             circle = $(circleList[number])
-//             attempt = 0
-//         }
-//         $('html,body').animate({scrollLeft: circle.offset().left - (width / 2)});
-//         circle.d3Click()
-//     }
-// }, 2200)
-
- $('html,body').animate({scrollLeft: 0});
-
-
-// make it so that on click, your great grandparent's children all become open.
-// and then just click a random closed one
-
-
-
-// setInterval(function(){
-//     var circleList = $("circle.closed")
-//     var number = Math.floor(Math.random() * (($('circle.closed').length) + 1) * 1.1)
-//     var circle = $(circleList[number])
-//     circle.d3Click()
-//     $('html,body').animate({scrollLeft: circle.offset().left - (width / 2)});
-// }, 2500)
-
+$('html,body').animate({scrollLeft: 0});
 
 
 var count = 0
 setInterval(function(){
-    if (count < 50){
+    if (count < 70){
         var circleList = $("circle.closed")
         var number = Math.floor(Math.random() * circleList.length)
         while (number == 0){
