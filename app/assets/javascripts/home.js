@@ -1,6 +1,6 @@
 $(function(){
 
-risingTide = 0
+risingTide = -1
 
 
 var margin = {
@@ -159,7 +159,7 @@ function click(d) {
             success: function(data){
                 d.children = d._children
                 if (data['error'] == false) {
-                    var limit = 0.5 + Math.random()
+                    var limit = 0.55 + Math.random()
                     for (var i = 0; i < data.list.length && i < limit; i++) {
                         d.children.push({
                             name: data.list[i], 
